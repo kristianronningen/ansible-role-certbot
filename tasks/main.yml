@@ -16,4 +16,3 @@
     loop_var: cert_item
 
 - import_tasks: renew-cron.yml
-  when: certbot_auto_renew
