@@ -1,0 +1,26 @@
+---
+# - debug:
+#     msg: "Full cert_item: {{ cert_item }}"
+
+# - debug:
+#     msg: "cert_item domains: {{ cert_item.domains }}"
+
+- name: "Check if certificate already exists."
+  stat:
+    path: "/etc/letsencrypt/live/{{ cert_item.domains | first | replace('*.', '') }}/cert.pem"
+  register: letsencrypt_cert
+
+# Does this work with when: or will this set the fact regardless?
+- name: "Guess certbot script if the certbot_script variable is unset"
+  set_fact:
+    certbot_script: "certbot"
+  when: certbot_script is not defined
+
+# - name: Generate new certificate if one doesn't exist.
+#   debug:
+#     msg: "Create cert with: {{ certbot_create_command }}"
+#   when: not letsencrypt_cert.stat.exists
+
+- name: Generate new certificate if one doesn't exist.
+  command: "{{ certbot_create_command }}"
+  when: not letsencrypt_cert.stat.exists
